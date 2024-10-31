@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro, Inicio de Sesión y Eliminación de Usuario</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="main.js"></script> <!-- Vincular el archivo externo de JavaScript -->
+</head>
+<body>
+  <h2>Formulario de Registro de Usuario</h2>
+
+  <!-- Formulario de registro -->
+  <form id="registerForm">
+    <label for="registerUsername">Nombre de usuario:</label>
+    <input type="text" id="registerUsername" name="username" required><br><br>
+
+    <label for="registerPassword">Contraseña:</label>
+    <input type="password" id="registerPassword" name="password" required><br><br>
+
+    <button type="button" onclick="registerUser()">Registrar Usuario</button>
+  </form>
+
+  <h2>Formulario de Inicio de Sesión</h2>
+
+  <!-- Formulario de inicio de sesión -->
+  <form id="loginForm">
+    <label for="loginUsername">Nombre de usuario:</label>
+    <input type="text" id="loginUsername" name="username" required><br><br>
+
+    <label for="loginPassword">Contraseña:</label>
+    <input type="password" id="loginPassword" name="password" required><br><br>
+
+    <button type="button" onclick="loginUser()">Iniciar Sesión</button>
+  </form>
+
+  <h2>Formulario para Borrar Usuario</h2>
+
+  <!-- Formulario de eliminación de usuario -->
+  <form id="deleteForm">
+    <label for="deleteUsername">Nombre de usuario:</label>
+    <input type="text" id="deleteUsername" name="username" required><br><br>
+
+    <label for="deletePassword">Contraseña:</label>
+    <input type="password" id="deletePassword" name="password" required><br><br>
+
+    <button type="button" onclick="deleteUser()">Borrar Usuario</button>
+  </form>
+
+  <div id="result"></div> <!-- Muestra mensajes de éxito o error -->
+</body>
+</html>
