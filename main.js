@@ -1,37 +1,65 @@
-// Función para registrar un usuario mediante AJAX
+// Función para registrar un usuario mediante AJAX con validación de campos y duplicados
 function registerUser() {
-    const username = $('#registerUsername').val();
-    const password = $('#registerPassword').val();
+    const username = $('#registerUsername').val().trim();
+    const email = $('#registerEmail').val().trim();
+    const password = $('#registerPassword').val().trim();
   
-    $.ajax({
-      url: 'http://localhost:3000/users',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify({ username, password }),
-      success: function(response) {
-        $('#result').text('Usuario registrado exitosamente. ID: ' + response.id);
-        $('#registerForm')[0].reset();
-      },
-      error: function(error) {
-        $('#result').text('Error al registrar el usuario.');
-      }
-    });
-  }
-  
-  // Función para iniciar sesión mediante AJAX
-  function loginUser() {
-    const username = $('#loginUsername').val();
-    const password = $('#loginPassword').val();
+    if (!username || !email || !password) {
+      $('#result').text('Por favor, complete todos los campos.');
+      return;
+    }
   
     $.ajax({
       url: 'http://localhost:3000/users',
       type: 'GET',
       success: function(users) {
-        const user = users.find(u => u.username === username && u.password === password);
-        if (user) {
-          $('#result').text('Inicio de sesión exitoso. Bienvenido, ' + username + '!');
+        const userExists = users.some(u => u.username === username || u.email === email);
+  
+        if (userExists) {
+          $('#result').text('El nombre de usuario o correo electrónico ya están registrados. Por favor, elija otros.');
         } else {
-          $('#result').text('Nombre de usuario o contraseña incorrectos.');
+          $.ajax({
+            url: 'http://localhost:3000/users',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ username, email, password }),
+            success: function(response) {
+              $('#result').text('Usuario registrado exitosamente. ID: ' + response.id);
+              $('#registerForm')[0].reset();
+            },
+            error: function(error) {
+              $('#result').text('Error al registrar el usuario.');
+            }
+          });
+        }
+      },
+      error: function(error) {
+        $('#result').text('Error al verificar el usuario.');
+      }
+    });
+  }
+  
+  // Función para iniciar sesión con nombre de usuario o correo electrónico y contraseña
+  function loginUser() {
+    const identifier = $('#loginUsername').val().trim();
+    const password = $('#loginPassword').val().trim();
+  
+    if (!identifier || !password) {
+      $('#result').text('Por favor, complete todos los campos.');
+      return;
+    }
+  
+    $.ajax({
+      url: 'http://localhost:3000/users',
+      type: 'GET',
+      success: function(users) {
+        const user = users.find(u => (u.username === identifier || u.email === identifier) && u.password === password);
+  
+        if (user) {
+          $('#result').text('Inicio de sesión exitoso. Bienvenido, ' + user.username + '!');
+          $('#loginForm')[0].reset();
+        } else {
+          $('#result').text('Nombre de usuario/correo o contraseña incorrectos.');
         }
       },
       error: function(error) {
@@ -40,34 +68,38 @@ function registerUser() {
     });
   }
   
-  // Función para borrar un usuario mediante AJAX
+  // Función para borrar un usuario con confirmación
   function deleteUser() {
-    const username = $('#deleteUsername').val();
-    const password = $('#deletePassword').val();
+    const identifier = $('#deleteUsername').val().trim();
+    const password = $('#deletePassword').val().trim();
+  
+    if (!identifier || !password) {
+      $('#result').text('Por favor, complete todos los campos.');
+      return;
+    }
   
     $.ajax({
       url: 'http://localhost:3000/users',
       type: 'GET',
       success: function(users) {
-        const user = users.find(u => u.username === username && u.password === password);
+        const user = users.find(u => (u.username === identifier || u.email === identifier) && u.password === password);
+  
         if (user) {
-          if (confirm('¿Estás seguro de que deseas eliminar el usuario?')) {
+          if (confirm(`¿Está seguro de que desea eliminar al usuario "${user.username}"?`)) {
             $.ajax({
-              url: `http://localhost:3000/users/${user.id}`, // Eliminar por ID de usuario
+              url: `http://localhost:3000/users/${user.id}`,
               type: 'DELETE',
-              success: function() {
+              success: function(response) {
                 $('#result').text('Usuario eliminado exitosamente.');
-                $('#deleteForm')[0].reset(); // Limpiar formulario de eliminación
+                $('#deleteForm')[0].reset();
               },
               error: function(error) {
-                $('#result').text('Error al intentar eliminar el usuario.');
+                $('#result').text('Error al eliminar el usuario.');
               }
             });
-          } else {
-            $('#result').text('Eliminación de usuario cancelada.');
           }
         } else {
-          $('#result').text('Nombre de usuario o contraseña incorrectos.');
+          $('#result').text('Nombre de usuario/correo o contraseña incorrectos.');
         }
       },
       error: function(error) {
@@ -75,11 +107,4 @@ function registerUser() {
       }
     });
   }
-
   
-
-
-
-
-
-  maxlength
